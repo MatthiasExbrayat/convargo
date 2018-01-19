@@ -32,7 +32,8 @@ const deliveries = [{
   'distance': 100,
   'volume': 4,
   'options': {
-    'deductibleReduction': false
+    'deductibleReduction': false,
+    'additionalCharge': 0
   },
   'price': 0,
   'commission': {
@@ -47,7 +48,8 @@ const deliveries = [{
   'distance': 650,
   'volume': 12,
   'options': {
-    'deductibleReduction': true
+    'deductibleReduction': true,
+    'additionalCharge': 0
   },
   'price': 0,
   'commission': {
@@ -62,7 +64,8 @@ const deliveries = [{
   'distance': 1250,
   'volume': 30,
   'options': {
-    'deductibleReduction': true
+    'deductibleReduction': true,
+    'additionalCharge': 0
   },
   'price': 0,
   'commission': {
@@ -149,8 +152,8 @@ console.log(truckers);
 console.log(deliveries);
 console.log(actors);
 
-//------STEP 3------
-//Compute the amount that belongs to the insurance, to the assistance and to convargo.
+//------STEP 4------
+//Compute the new amount price if the shipper subscribed to deductible option.
 function calculateDeliveriesPrice() {
   deliveries.forEach(function(delivery) {
 
@@ -194,7 +197,7 @@ function calculateDeliveriesPrice() {
     //Calculate the deductible commission
     if(delivery.options.deductibleReduction){
       var additionalCharge = delivery.volume;
-      delivery.commission.convargo += additionalCharge;
+      delivery.options.additionalCharge += additionalCharge;
       delivery.price += additionalCharge;
     }
 
@@ -206,12 +209,13 @@ calculateDeliveriesPrice();
 
 deliveries.forEach(function(delivery) {
   //I print the price in the console
-  console.log("Step 4 : Compute the new amount price if the shipper subscribed to deductible option.");
+  console.log("Step 4 - Compute the new amount price if the shipper subscribed to deductible option.");
   console.log(" Delivery ID : " + delivery.id);
   console.log(" Delivery Price : " + delivery.price);
   console.log(" Insurance : " + delivery.commission.insurance);
   console.log(" Treasury : " + delivery.commission.treasury);
   console.log(" Convargo : " + delivery.commission.convargo);
+  console.log(" Additional charge for the option : " + delivery.options.additionalCharge);
 });
 
 console.log("");
