@@ -186,20 +186,27 @@ function calculateDeliveriesPrice() {
 
     //Calculate the commission
     var commission = (delivery.price / 100) * 30;
-    console.log(commission);
 
     delivery.commission.insurance = commission/2;
     delivery.commission.treasury = Math.ceil(delivery.distance/500);
     delivery.commission.convargo = commission - (delivery.commission.insurance + delivery.commission.treasury);
 
+    //Calculate the deductible commission
+    if(delivery.options.deductibleReduction){
+      var additionalCharge = delivery.volume;
+      delivery.commission.convargo += additionalCharge;
+      delivery.price += additionalCharge;
+    }
+
   });
 }
 
+//Use the function to calculate all prices and commissions
 calculateDeliveriesPrice();
 
 deliveries.forEach(function(delivery) {
   //I print the price in the console
-  console.log("Step 3 : Compute the amount that belongs to the insurance, to the assistance and to convargo.");
+  console.log("Step 4 : Compute the new amount price if the shipper subscribed to deductible option.");
   console.log(" Delivery ID : " + delivery.id);
   console.log(" Delivery Price : " + delivery.price);
   console.log(" Insurance : " + delivery.commission.insurance);
