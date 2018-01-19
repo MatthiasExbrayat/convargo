@@ -148,3 +148,30 @@ const actors = [{
 console.log(truckers);
 console.log(deliveries);
 console.log(actors);
+
+//Calculate the step 1 shipping price for each delivery 
+deliveries.forEach(function(delivery) {
+
+  //Object to keep the delivery's trucker
+  var deliveryTrucker;
+
+  //I find the delivery's trucker and keep it in the variable
+  truckers.forEach(function(trucker) {
+    if(trucker.id == delivery.truckerId){
+      deliveryTrucker = trucker;
+    }
+  });
+
+  //I calculate the price for the current delivery
+  var distancePrice = delivery.distance * deliveryTrucker.pricePerKm;
+  var volumePrice = delivery.volume * deliveryTrucker.pricePerVolume;
+  var price = distancePrice * volumePrice;
+
+  //I update the price in the current delivery object
+  delivery.price = price;
+
+  //I print the price in the console
+  console.log("Step 1 : calculated price for each delivery");
+  console.log(" Delivery ID : " + delivery.id);
+  console.log(" Delivery Price : " + delivery.price);
+});
