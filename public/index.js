@@ -149,8 +149,8 @@ console.log(truckers);
 console.log(deliveries);
 console.log(actors);
 
-//------STEP 1------
-//Calculate the step 1 shipping price for each delivery
+//------STEP 2------
+//Decreasing pricing for high volumes
 function calculateDeliveriesPrice() {
   deliveries.forEach(function(delivery) {
 
@@ -164,9 +164,21 @@ function calculateDeliveriesPrice() {
       }
     });
 
+    //Variable for the reduction
+    var reduction = 0;
+
+    //According to the volume I set the new price per volume
+    if(delivery.volume > 25){
+      reduction = (deliveryTrucker.pricePerVolume / 100) * 50;
+    }else if(delivery.volume > 10){
+      reduction = (deliveryTrucker.pricePerVolume / 100) * 30;
+    }else if(delivery.volume > 5){
+      reduction = (deliveryTrucker.pricePerVolume / 100) * 50;
+    }
+
     //I calculate the price for the current delivery
     var distancePrice = delivery.distance * deliveryTrucker.pricePerKm;
-    var volumePrice = delivery.volume * deliveryTrucker.pricePerVolume;
+    var volumePrice = delivery.volume * (deliveryTrucker.pricePerVolume - reduction);
     var price = distancePrice + volumePrice;
 
     //I update the price in the current delivery object
@@ -178,7 +190,7 @@ calculateDeliveriesPrice();
 
 deliveries.forEach(function(delivery) {
   //I print the price in the console
-  console.log("Step 1 : calculated price for each delivery");
+  console.log("Step 2 : decreasing pricing for high volumes");
   console.log(" Delivery ID : " + delivery.id);
   console.log(" Delivery Price : " + delivery.price);
 });
