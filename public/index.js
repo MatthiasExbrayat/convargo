@@ -149,8 +149,8 @@ console.log(truckers);
 console.log(deliveries);
 console.log(actors);
 
-//------STEP 2------
-//Decreasing pricing for high volumes
+//------STEP 3------
+//Compute the amount that belongs to the insurance, to the assistance and to convargo.
 function calculateDeliveriesPrice() {
   deliveries.forEach(function(delivery) {
 
@@ -183,6 +183,15 @@ function calculateDeliveriesPrice() {
 
     //I update the price in the current delivery object
     delivery.price = price;
+
+    //Calculate the commission
+    var commission = (delivery.price / 100) * 30;
+    console.log(commission);
+
+    delivery.commission.insurance = commission/2;
+    delivery.commission.treasury = Math.ceil(delivery.distance/500);
+    delivery.commission.convargo = commission - (delivery.commission.insurance + delivery.commission.treasury);
+
   });
 }
 
@@ -190,9 +199,12 @@ calculateDeliveriesPrice();
 
 deliveries.forEach(function(delivery) {
   //I print the price in the console
-  console.log("Step 2 : decreasing pricing for high volumes");
+  console.log("Step 3 : Compute the amount that belongs to the insurance, to the assistance and to convargo.");
   console.log(" Delivery ID : " + delivery.id);
   console.log(" Delivery Price : " + delivery.price);
+  console.log(" Insurance : " + delivery.commission.insurance);
+  console.log(" Treasury : " + delivery.commission.treasury);
+  console.log(" Convargo : " + delivery.commission.convargo);
 });
 
 console.log("");
