@@ -152,25 +152,25 @@ console.log(truckers);
 console.log(deliveries);
 console.log(actors);
 
-//------STEP 4------
-//Compute the new amount price if the shipper subscribed to deductible option.
-function calculateDeliveriesPrice() {
+//------STEP 5------
+//Pay the actors
+function calculateDeliveriesPrices() {
   deliveries.forEach(function(delivery) {
 
-    //Object to keep the delivery's trucker
+    //Object to hold the delivery's trucker
     var deliveryTrucker;
 
-    //I find the delivery's trucker and keep it in the variable
+    //I find the delivery's trucker and hold it in the precedent variable
     truckers.forEach(function(trucker) {
       if(trucker.id == delivery.truckerId){
         deliveryTrucker = trucker;
       }
     });
 
-    //Variable for the reduction
+    //Variable to contain the reduction for the price per volume
     var reduction = 0;
 
-    //According to the volume I set the new price per volume
+    //According to the volume I update the reduction
     if(delivery.volume > 25){
       reduction = (deliveryTrucker.pricePerVolume / 100) * 50;
     }else if(delivery.volume > 10){
@@ -187,35 +187,51 @@ function calculateDeliveriesPrice() {
     //I update the price in the current delivery object
     delivery.price = price;
 
-    //Calculate the commission
-    var commission = (delivery.price / 100) * 30;
+    //I calculate the total of commissions
+    var totalCommission = (delivery.price / 100) * 30;
 
-    delivery.commission.insurance = commission/2;
+    //I update the commissions in the current delivery object
+    delivery.commission.insurance = totalCommission/2;
     delivery.commission.treasury = Math.ceil(delivery.distance/500);
-    delivery.commission.convargo = commission - (delivery.commission.insurance + delivery.commission.treasury);
+    delivery.commission.convargo = totalCommission - (delivery.commission.insurance + delivery.commission.treasury);
 
-    //Calculate the deductible commission
-    if(delivery.options.deductibleReduction){
+    //I calculate the deductible reduction if the option is choose by the shipper
+    //In each delivery object I added a field "additionalCharge" in the field "options" to contain the calculated additional charge
+     if(delivery.options.deductibleReduction){
       var additionalCharge = delivery.volume;
-      delivery.options.additionalCharge += additionalCharge;
-      delivery.price += additionalCharge;
+      delivery.options.additionalCharge = additionalCharge;
+      //The delivery. price doesn't change because the additional charge is contained in the field created before
     }
 
+    //Set the debit or credit for each actor of the delivery
+    //I found the payment object corresponding to the current delivery
+    var deliveryActors;
+
+    actors.forEach(function(actorsOfTheDelivery) {
+      if(actorsOfTheDelivery.deliveryId == delivery.id){
+        deliveryActors = actorsOfTheDelivery.payment;
+      }
+    });
+
+    //Now I update the amount for each actor
+    deliveryActors[0].amount = delivery.price + delivery.options.additionalCharge;
+    deliveryActors[1].amount = delivery.price - (delivery.commission.insurance + delivery.commission.treasury + delivery.commission.convargo);
+    deliveryActors[2].amount = delivery.commission.treasury;
+    deliveryActors[3].amount = delivery.commission.insurance;
+    deliveryActors[4].amount = delivery.commission.convargo + delivery.options.additionalCharge;
+
+    //I show the credit and debit prices in the browser console
+    console.log("Step 5 - Pay the actors");
+    console.log(" Delivery ID : " + delivery.id);
+    console.log(" Delivery Price (without additionals charges): " + delivery.price);
+    console.log(" Delivery additionals charges: " + delivery.options.additionalCharge);
+    console.log(" Debit shipper (including additionals charges) : " + deliveryActors[0].amount);
+    console.log(" Credit trucker : " + deliveryActors[1].amount);
+    console.log(" Credit treasury : " + deliveryActors[2].amount);
+    console.log(" Credit insurance : " + deliveryActors[3].amount);
+    console.log(" Credit convargo (including additionals charges) : " + deliveryActors[4].amount);
   });
 }
 
 //Use the function to calculate all prices and commissions
-calculateDeliveriesPrice();
-
-deliveries.forEach(function(delivery) {
-  //I print the price in the console
-  console.log("Step 4 - Compute the new amount price if the shipper subscribed to deductible option.");
-  console.log(" Delivery ID : " + delivery.id);
-  console.log(" Delivery Price : " + delivery.price);
-  console.log(" Insurance : " + delivery.commission.insurance);
-  console.log(" Treasury : " + delivery.commission.treasury);
-  console.log(" Convargo : " + delivery.commission.convargo);
-  console.log(" Additional charge for the option : " + delivery.options.additionalCharge);
-});
-
-console.log("");
+calculateDeliveriesPrices();
